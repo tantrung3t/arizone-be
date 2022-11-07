@@ -61,6 +61,8 @@ class CustomUser(AbstractUser):
     block_at = models.DateTimeField(blank=True, null=True)
     block_by = models.CharField(max_length=255, blank=True, null=True)
     image = models.ImageField(null=True, upload_to="images/profile/")
+    business_status = models.CharField(max_length=255, null=True, default="pending")
+    created = models.DateTimeField(auto_now_add=True)
     objects = UserManager()
     REQUIRED_FIELDS = ["phone"]
     USERNAME_FIELD = "email"
@@ -76,4 +78,10 @@ class BusinessUser(models.Model):
     longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
     latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
     address = models.CharField(max_length=255)
-    
+    status = models.CharField(max_length=255, null=True)
+    rating = models.FloatField(default=0)
+    amount_product = models.IntegerField(default=0)
+    sold = models.IntegerField(default=0)
+
+    def __str__(self):
+        return str(self.user)

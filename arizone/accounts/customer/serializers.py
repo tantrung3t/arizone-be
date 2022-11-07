@@ -60,6 +60,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "full_name",
+            "permission",
+            "image"
+        ]
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:

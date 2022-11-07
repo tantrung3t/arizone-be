@@ -18,7 +18,7 @@ from .serializers import RegisterSerializer
 from rest_framework_simplejwt.views import TokenBlacklistView, TokenRefreshView
 from rest_framework_simplejwt import authentication
 from rest_framework import permissions
-from .serializers import UserProfileSerializer, UserImageProfileSerializer
+from .serializers import UserProfileSerializer, UserImageProfileSerializer, UserSerializer
 from django.contrib.auth import get_user_model
 # Create your views here.
 User = get_user_model()
@@ -48,28 +48,29 @@ class UserAPI(APIView):
     authentication_classes = [authentication.JWTAuthentication]
 
     def get(self, request):
-        return Response(data={
-            "permission": request.user.permission,
-            "full_name": request.user.full_name
-        },
-            status=status.HTTP_200_OK)
+        queryset = User.objects.get(email=request.user)
+        serializer = UserSerializer(queryset)
+        return Response(data=serializer.data,
+                        status=status.HTTP_200_OK)
 
 
-class UserProfileAPI(APIView):
+class UserProfileAPI(APIView): 
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [authentication.JWTAuthentication]
 
     def get(self, request):
         queryset = User.objects.get(email=request.user)
-        serializer = UserProfileSerializer(queryset)
+        serializer = UserSerializer(queryset)
         return Response(serializer.data)
 
     def post(self, request):
         user_profile = User.objects.get(email=request.user)
-        serializer = UserProfileSerializer(instance=user_profile, data=request.data)
+        serializer = UserProfileSerializer(
+            instance=user_profile, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(data=serializer.data)
+
 
 class ImageUserProfileAPI(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -77,7 +78,8 @@ class ImageUserProfileAPI(APIView):
 
     def post(self, request):
         user_profile = User.objects.get(email=request.user)
-        serializer = UserImageProfileSerializer(instance=user_profile, data=request.data)
+        serializer = UserImageProfileSerializer(
+            instance=user_profile, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(data=serializer.data)

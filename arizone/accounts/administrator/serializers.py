@@ -16,8 +16,9 @@ class UpdateBusinessUserAPI(serializers.ModelSerializer):
             "phone",
             "email",
             "is_active",
+            "business_status"
         ]
-        
+
         extra_kwargs = {
             "id": {"read_only": True},
             "full_name": {"read_only": True},
@@ -25,8 +26,23 @@ class UpdateBusinessUserAPI(serializers.ModelSerializer):
             "email": {"read_only": True},
         }
 
+class BusinessSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BusinessUser
+        fields = [
+            "address",
+            "status"
+        ]
 
 class UserSerializer(serializers.ModelSerializer):
+
+    business = serializers.SerializerMethodField()
+
+    def get_business(self, obj):
+        queryset = BusinessUser.objects.get(user = obj)
+        serializers = BusinessSerializer(queryset)
+        return serializers.data
+
     class Meta:
         model = User
         fields = [
@@ -35,4 +51,6 @@ class UserSerializer(serializers.ModelSerializer):
             "phone",
             "email",
             "is_active",
+            "business_status",
+            "business"
         ]
