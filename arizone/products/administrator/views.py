@@ -23,3 +23,11 @@ class ListProductAPI(generics.ListAPIView):
     ordering_fields = ["created_at"]
 
 
+class UpdateProductAPI(generics.UpdateAPIView):
+
+    serializer_class = serializers.UpdateProductSerializer
+    queryset = models.Product.objects.filter(is_delete=False)
+    lookup_url_kwarg = "product_id"
+
+    permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]

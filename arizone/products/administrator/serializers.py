@@ -20,3 +20,10 @@ class ListProductSerializer(serializers.ModelSerializer):
             "is_block",
             "created_by"
         ]
+
+class UpdateProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Product
+        fields = [
+            "is_block",
+        ]

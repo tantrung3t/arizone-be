@@ -33,3 +33,22 @@ class CreateProductSerializer(serializers.ModelSerializer):
             "is_active",
             "amount"
         ]
+
+class UpdateProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Product
+        fields = [
+            "name",
+            "category",
+            "image",
+            "price",
+            "sale",
+            "description",
+            "element",
+            "type",
+            "effect",
+            "product_by",
+            "is_active",
+            "is_block",
+            "amount"
+        ]

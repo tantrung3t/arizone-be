@@ -1,4 +1,6 @@
 from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework import status
 from bases.paginations import LimitOffset8Pagination
 from bases.permisions import IsBusiness
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -28,7 +30,11 @@ class ListCreateProductAPI(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         business = models.BusinessUser.objects.get(user=self.request.user)
-        serializer.save(created_by=self.request.user, business=business)
+        if(business.user.business_status == "pending"):
+            serializer.save(created_by=self.request.user,
+                            business=business, is_active=False)
+        else:
+            serializer.save(created_by=self.request.user, business=business)
 
     # def create(self, request, *args, **kwargs):
     #     return super().create(request, *args, **kwargs)
@@ -37,3 +43,29 @@ class ListCreateProductAPI(generics.ListCreateAPIView):
         if(self.request.method == "GET"):
             return serializers.ListProductSerializer
         return super().get_serializer_class()
+
+
+class RetrieveUpdateDestroyProductAPI(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.UpdateProductSerializer
+    queryset = models.Product.objects.filter(is_delete=False)
+    permission_classes = [IsBusiness]
+    authentication_classes = [JWTAuthentication]
+
+    lookup_url_kwarg = "product_id"
+
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
+
+    def perform_update(self, serializer):
+        if(self.request.user.business_status == "pending"):
+            serializer.save(is_active=False)
+        else:
+            serializer.save()
+
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    def perform_destroy(self, instance):
+        instance.is_delete = True
+        instance.save()
