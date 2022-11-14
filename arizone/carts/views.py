@@ -11,8 +11,20 @@ class CartAPI(generics.ListAPIView):
     pagination_class = None
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
-    queryset = models.Cart.objects.all()
     serializer_class = serializers.ListCartSerializer
+
+    def get_queryset(self):
+        return models.Cart.objects.filter(customer=self.request.user)
+
+
+class CartDetailAPI(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    serializer_class = serializers.ListCartSerializer
+    lookup_url_kwarg = "cart_id"
+
+    def get_queryset(self):
+        return models.Cart.objects.filter(customer=self.request.user)
 
 
 class AddProductInCartAPI(views.APIView):
@@ -23,16 +35,16 @@ class AddProductInCartAPI(views.APIView):
         serializer = serializers.AddProductInCartSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         query_product = Product.objects.filter(id=request.data['product'])
-        
+
         try:
             query_cart = models.Cart.objects.get(
                 customer=request.user, business=query_product[0].business)
-            
+
             try:
-                
+
                 query_product_in_cart = models.CartDetail.objects.get(
                     cart=query_cart.id, product=request.data['product'])
-                
+
                 query_product_in_cart.quantity += request.data['quantity']
                 query_product_in_cart.save()
             except:
@@ -68,14 +80,14 @@ class AddProductInCartAPI(views.APIView):
         serializer = serializers.CreateCartSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        
+
         return serializer.data['id']
+
 
 class UpdateProductInCartAPI(generics.UpdateAPIView):
     queryset = models.CartDetail.objects.all()
     serializer_class = serializers.UpdateCartDetailSerializer
     lookup_url_kwarg = "cart_detail_id"
-
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -87,9 +99,29 @@ class UpdateProductInCartAPI(generics.UpdateAPIView):
 
     # def update(self, request, *args, **kwargs):
     #     return super().update(request, *args, **kwargs)
-        
+
 
 class DeleteProductInCartAPI(generics.DestroyAPIView):
     queryset = models.CartDetail.objects.all()
     serializer_class = serializers.UpdateCartDetailSerializer
     lookup_url_kwarg = "cart_detail_id"
+
+
+class CartAmountAPI(generics.ListAPIView):
+    pagination_class = None
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    serializer_class = serializers.ListCartSerializer
+
+    def get_queryset(self):
+        return models.Cart.objects.filter(customer=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+        cart = super().list(request, *args, **kwargs)
+        amount = 0
+        for x in cart.data:
+            for y in x['cart_detail']:
+                amount += y['quantity']
+        return response.Response(data={
+            "amount": amount
+        })

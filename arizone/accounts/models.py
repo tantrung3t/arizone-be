@@ -53,6 +53,7 @@ class CustomUser(AbstractUser):
     full_name = models.CharField(max_length=255)
     phone = models.CharField(max_length=10)
     email = models.EmailField(_('email address'), unique=True)
+    address = models.TextField(null=True)
     birthday = models.DateField(blank=True, null=True)
     sex = models.CharField(max_length=10)
     permission = models.CharField(max_length=255)

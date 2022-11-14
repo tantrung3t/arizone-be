@@ -66,6 +66,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             "full_name",
             "permission",
+            "phone",
+            "address",
             "image"
         ]
 
