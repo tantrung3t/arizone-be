@@ -91,7 +91,7 @@ class UpdateProductInCartAPI(generics.UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.quantity += 1
+        instance.quantity += request.data['quantity']
         instance.save()
         return response.Response(data={
             "status": "success"

@@ -3,6 +3,9 @@ from rest_framework import response, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
+
 from . import serializers
 from .. import models
 
@@ -10,7 +13,17 @@ from .. import models
 class ListOrderAPI(generics.ListAPIView):
     pagination_class = None
     serializer_class = serializers.ListOrderSerializer
-    queryset = models.Order.objects.all()
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['phone']
+    filterset_fields = ['status']
+    ordering_fields = ['id']
+
+    def get_queryset(self):
+        return models.Order.objects.filter(user=self.request.user)
 
 
 class CreateOrderAPI(generics.CreateAPIView):
@@ -23,12 +36,18 @@ class CreateOrderAPI(generics.CreateAPIView):
         # serializer.is_valid(raise_exception=True)
 
         order_detail = []
-
+        total = 0
         for product_order in request.data['order']:
             serializer_order_detail = serializers.CreateOrderDetailSerializer(
                 data=product_order)
             serializer_order_detail.is_valid(raise_exception=True)
             serializer_order_detail.save()
+
+            if(product_order['sale']):
+                total += product_order['sale'] * product_order['quantity']
+            else:
+                total += product_order['price'] * product_order['quantity']
+
             order_detail.append(serializer_order_detail.data['id'])
 
         print(order_detail)
@@ -40,6 +59,7 @@ class CreateOrderAPI(generics.CreateAPIView):
             "address":request.data['address'],
             "payment": "cash",
             "status": "pending",
+            "total": total,
             "product_detail": order_detail,
             "store": request.data['business'],
         }

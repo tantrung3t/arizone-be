@@ -19,4 +19,5 @@ class Order(models.Model):
     payment = models.CharField(max_length=255)
     status = models.CharField(default="pending", max_length=50)
     product_detail = models.ManyToManyField(OrderDetail)
+    total = models.IntegerField(default=0)
     store = models.ForeignKey(BusinessUser, on_delete=models.CASCADE)

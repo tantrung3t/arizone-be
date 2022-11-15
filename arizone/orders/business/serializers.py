@@ -44,7 +44,6 @@ class StoreSerializer(serializers.ModelSerializer):
 
 class ListOrderSerializer(serializers.ModelSerializer):
     product_detail = OrderDetailSerializer(many=True)
-    store = StoreSerializer()
     class Meta:
         model = models.Order
         fields = [
@@ -56,7 +55,6 @@ class ListOrderSerializer(serializers.ModelSerializer):
             "payment",
             "status",
             "total",
-            "store",
             "product_detail"
 
         ]
