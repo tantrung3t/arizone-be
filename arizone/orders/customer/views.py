@@ -6,6 +6,8 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 
+from bases.services.firebase import notification
+
 from . import serializers
 from .. import models
 
@@ -50,7 +52,7 @@ class CreateOrderAPI(generics.CreateAPIView):
 
             order_detail.append(serializer_order_detail.data['id'])
 
-        print(order_detail)
+        # print(order_detail)
 
         data = {
             "user": request.user.id,
@@ -67,4 +69,10 @@ class CreateOrderAPI(generics.CreateAPIView):
         serializer_order = serializers.CreateOrderSerializer(data=data)
         serializer_order.is_valid(raise_exception=True)
         serializer_order.save()
+        SendNotify(request.data['business'])
         return response.Response(data=serializer_order.data)
+
+
+def SendNotify(business):
+    queryset = models.BusinessUser.objects.get(id=business)
+    notification.send_notify_message(user_id=queryset.user.id, msg_title="Arizone", msg_body="Bạn có đơn hàng mới!")

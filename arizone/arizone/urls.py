@@ -38,4 +38,6 @@ urlpatterns = [
 
     path('map/', include('maps.urls')),
 
+    path('device/', include('devices.urls')),
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

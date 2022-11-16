@@ -6,10 +6,12 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from bases.permisions import IsBusiness
+from bases.paginations import LimitOffset8Pagination
 from . import serializers
 from .. import models
 
 class ListOrderAPI(generics.ListAPIView):
+    pagination_class = LimitOffset8Pagination
     serializer_class = serializers.ListOrderSerializer
     permission_classes = [IsBusiness]
     authentication_classes = [JWTAuthentication]
