@@ -68,7 +68,8 @@ class UserSerializer(serializers.ModelSerializer):
             "permission",
             "phone",
             "address",
-            "image"
+            "image",
+            "stripe_customer"
         ]
 
 class UserProfileSerializer(serializers.ModelSerializer):

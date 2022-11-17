@@ -56,6 +56,7 @@ class CustomUser(AbstractUser):
     address = models.TextField(null=True)
     birthday = models.DateField(blank=True, null=True)
     sex = models.CharField(max_length=10)
+    stripe_customer = models.CharField(max_length=30, null=True, blank=True)
     permission = models.CharField(max_length=255)
     updated_at = models.DateTimeField(auto_now=True)
     updated_by = models.CharField(max_length=255, blank=True)
