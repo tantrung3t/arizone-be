@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
-
+from .. import models
 User = get_user_model()
 
 
@@ -93,4 +93,18 @@ class UserImageProfileSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             "image"
+        ]
+
+
+
+
+class StoreSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    class Meta:
+        model = models.BusinessUser
+        fields = [
+            "id",
+            "user",
+            "longitude",
+            "latitude"
         ]

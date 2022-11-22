@@ -9,4 +9,5 @@ urlpatterns = [
     path('user/', views.UserAPI.as_view(), name="user"),
     path('user/profile/', views.UserProfileAPI.as_view(), name="user-profile"),
     path('user/profile/image/', views.ImageUserProfileAPI.as_view(), name="user-profile"),
+    path('store/<int:store_id>', views.StoreAPI.as_view())
 ]

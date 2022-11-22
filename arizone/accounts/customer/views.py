@@ -18,12 +18,14 @@ from .serializers import RegisterSerializer
 from rest_framework_simplejwt.views import TokenBlacklistView, TokenRefreshView
 from rest_framework_simplejwt import authentication
 from rest_framework import permissions
-from .serializers import UserProfileSerializer, UserImageProfileSerializer, UserSerializer
+from .serializers import UserProfileSerializer, UserImageProfileSerializer, UserSerializer, StoreSerializer
 from django.contrib.auth import get_user_model
 # Create your views here.
 User = get_user_model()
 # Using TokenBlacklistView default
 # Using TokenRefreshView default
+
+from .. import models
 
 
 class LoginAPI(TokenObtainPairView):
@@ -83,3 +85,10 @@ class ImageUserProfileAPI(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(data=serializer.data)
+
+
+class StoreAPI(generics.RetrieveAPIView):
+
+    queryset = models.BusinessUser.objects.all()
+    serializer_class = StoreSerializer
+    lookup_url_kwarg = "store_id"
