@@ -24,3 +24,23 @@ class ListOrderAPI(generics.ListAPIView):
 
     def get_queryset(self):
         return models.Order.objects.filter(store__user=self.request.user)
+
+class DetailOrderAPI(generics.RetrieveAPIView):
+    serializer_class = serializers.DetailOrderSerializer
+    permission_classes = [IsBusiness]
+    authentication_classes = [JWTAuthentication]
+    lookup_url_kwarg = "order_id"
+
+    def get_queryset(self):
+        return models.Order.objects.filter(store__user=self.request.user)
+
+class UpdateOrderAPI(generics.UpdateAPIView):
+    serializer_class = serializers.UpdateOrderSerializer
+    permission_classes = [IsBusiness]
+    authentication_classes = [JWTAuthentication]
+    lookup_url_kwarg = "order_id"
+
+    def get_queryset(self):
+        return models.Order.objects.filter(store__user=self.request.user)
+
+

@@ -3,6 +3,12 @@ from .. import models
 from products.models import Product
 from accounts.models import CustomUser, BusinessUser
 
+class UpdateOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Order
+        fields = [
+            "status"
+        ]
 
 class DetailProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -43,6 +49,23 @@ class StoreSerializer(serializers.ModelSerializer):
         ]
 
 class ListOrderSerializer(serializers.ModelSerializer):
+    # product_detail = OrderDetailSerializer(many=True)
+    class Meta:
+        model = models.Order
+        fields = [
+            "id",
+            "user",
+            "full_name",
+            "phone",
+            "address",
+            "payment",
+            "status",
+            "total",
+            # "product_detail"
+
+        ]
+
+class DetailOrderSerializer(serializers.ModelSerializer):
     product_detail = OrderDetailSerializer(many=True)
     class Meta:
         model = models.Order
@@ -56,10 +79,7 @@ class ListOrderSerializer(serializers.ModelSerializer):
             "status",
             "total",
             "product_detail"
-
         ]
-
-
 class CreateOrderDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.OrderDetail

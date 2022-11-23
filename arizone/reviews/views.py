@@ -7,6 +7,8 @@ from rest_framework import filters
 from . import models, serializers
 # Create your views here.
 
+from products.ultis import add_rating
+
 class CreateReviewAPI(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
@@ -14,6 +16,7 @@ class CreateReviewAPI(generics.CreateAPIView):
     queryset = models.Review.objects.all()
     
     def perform_create(self, serializer):
+        add_rating(self.request.data['star'], self.request.data['product'])
         serializer.save(user=self.request.user)
 
 class ListReviewAPI(generics.ListAPIView):
