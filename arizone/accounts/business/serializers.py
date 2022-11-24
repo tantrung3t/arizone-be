@@ -48,3 +48,22 @@ class BusinessSerializer(serializers.ModelSerializer):
             "user",
             "address"
         ]
+
+class InfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "full_name",
+            "address",
+            "image"
+        ]
+
+class BusinessInfoSerializer(serializers.ModelSerializer):
+    user = InfoSerializer()
+    class Meta:
+        model = BusinessUser
+        fields = [
+            "user",
+            "latitude",
+            "longitude"
+        ]
