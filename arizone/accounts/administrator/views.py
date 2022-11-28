@@ -10,6 +10,7 @@ from rest_framework_simplejwt import tokens, authentication
 from django_filters.rest_framework import DjangoFilterBackend
 
 from django.contrib.auth import get_user_model
+from ..models import BusinessUser
 
 from .serializers import UserSerializer, UpdateBusinessUserAPI
 

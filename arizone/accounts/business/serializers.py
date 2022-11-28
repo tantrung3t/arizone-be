@@ -65,5 +65,6 @@ class BusinessInfoSerializer(serializers.ModelSerializer):
         fields = [
             "user",
             "latitude",
-            "longitude"
+            "longitude",
+            "address"
         ]

@@ -57,6 +57,7 @@ class UpdateInfoAPI(APIView):
 
         business.latitude = request.data["latitude"]
         business.longitude = request.data["longitude"]
+        business.address = request.data["address"]
         
         user.save()
         business.save()

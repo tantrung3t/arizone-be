@@ -1,8 +1,19 @@
 from rest_framework import serializers
 from .. import models
 
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "business_status"
+        ]
 class ListProductSerializer(serializers.ModelSerializer):
+    created_by = UserSerializer()
     class Meta:
         model = models.Product
         fields = [
@@ -12,7 +23,8 @@ class ListProductSerializer(serializers.ModelSerializer):
             "is_active",
             "is_block",
             "sold",
-            "amount"
+            "amount",
+            "created_by"
         ]
 
 
@@ -35,6 +47,7 @@ class CreateProductSerializer(serializers.ModelSerializer):
         ]
 
 class UpdateProductSerializer(serializers.ModelSerializer):
+    created_by = UserSerializer()
     class Meta:
         model = models.Product
         fields = [
@@ -50,5 +63,10 @@ class UpdateProductSerializer(serializers.ModelSerializer):
             "product_by",
             "is_active",
             "is_block",
+            "created_by",
             "amount"
         ]
+
+        extra_kwargs = {
+            "created_by": {"read_only": True},
+        }

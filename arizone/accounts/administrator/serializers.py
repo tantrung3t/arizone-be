@@ -15,7 +15,6 @@ class UpdateBusinessUserAPI(serializers.ModelSerializer):
             "full_name",
             "phone",
             "email",
-            "is_active",
             "business_status"
         ]
 

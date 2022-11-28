@@ -85,7 +85,7 @@ class CreateOrderAPI(generics.CreateAPIView):
 def SendNotify(business):
     queryset = models.BusinessUser.objects.get(id=business)
     notification.send_notify_message(
-        user_id=queryset.user.id, msg_title="Arizone", msg_body="Bạn có đơn hàng mới!")
+        user_id=queryset.user.id, msg_title=queryset.user.full_name, msg_body="Bạn có đơn hàng mới!")
 
 
 class CreateOrderPaymentOnlineAPI(generics.CreateAPIView):
