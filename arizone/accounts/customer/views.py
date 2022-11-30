@@ -1,4 +1,5 @@
 
+from .. import models
 from os import stat
 from rest_framework.views import APIView
 from rest_framework import generics, mixins
@@ -18,14 +19,12 @@ from .serializers import RegisterSerializer
 from rest_framework_simplejwt.views import TokenBlacklistView, TokenRefreshView
 from rest_framework_simplejwt import authentication
 from rest_framework import permissions
-from .serializers import UserProfileSerializer, UserImageProfileSerializer, UserSerializer, StoreSerializer
+from .serializers import UserProfileSerializer, UserImageProfileSerializer, UserSerializer, StoreSerializer, AddressSerializer
 from django.contrib.auth import get_user_model
 # Create your views here.
 User = get_user_model()
 # Using TokenBlacklistView default
 # Using TokenRefreshView default
-
-from .. import models
 
 
 class LoginAPI(TokenObtainPairView):
@@ -56,7 +55,7 @@ class UserAPI(APIView):
                         status=status.HTTP_200_OK)
 
 
-class UserProfileAPI(APIView): 
+class UserProfileAPI(APIView):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [authentication.JWTAuthentication]
 
@@ -92,3 +91,27 @@ class StoreAPI(generics.RetrieveAPIView):
     queryset = models.BusinessUser.objects.all()
     serializer_class = StoreSerializer
     lookup_url_kwarg = "store_id"
+
+
+class AddressAPI(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [authentication.JWTAuthentication]
+    serializer_class = AddressSerializer
+
+    pagination_class = None
+
+    def get_queryset(self):
+        return models.DeliveryAddress.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class DestroyAddressAPI(generics.DestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [authentication.JWTAuthentication]
+    serializer_class = AddressSerializer
+    lookup_url_kwarg = "address_id"
+
+    def get_queryset(self):
+        return models.DeliveryAddress.objects.filter(user=self.request.user)

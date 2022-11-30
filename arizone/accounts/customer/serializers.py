@@ -108,3 +108,14 @@ class StoreSerializer(serializers.ModelSerializer):
             "longitude",
             "latitude"
         ]
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.DeliveryAddress
+        fields = [
+            "id",
+            "name",
+            "phone",
+            "address",
+        ]
