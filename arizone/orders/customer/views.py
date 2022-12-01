@@ -14,6 +14,8 @@ from bases.services.firebase import notification
 
 from accounts.models import CustomUser
 
+from ..tasks import SendNotify
+
 import stripe
 from django.conf import settings
 from dotenv import load_dotenv
@@ -78,14 +80,9 @@ class CreateOrderAPI(generics.CreateAPIView):
         serializer_order = serializers.CreateOrderSerializer(data=data)
         serializer_order.is_valid(raise_exception=True)
         serializer_order.save()
-        SendNotify(request.data['business'])
+        SendNotify.delay(request.data['business'])
         return response.Response(data=serializer_order.data)
 
-
-def SendNotify(business):
-    queryset = models.BusinessUser.objects.get(id=business)
-    notification.send_notify_message(
-        user_id=queryset.user.id, msg_title=queryset.user.full_name, msg_body="Bạn có đơn hàng mới!")
 
 
 class CreateOrderPaymentOnlineAPI(generics.CreateAPIView):
@@ -140,7 +137,7 @@ class CreateOrderPaymentOnlineAPI(generics.CreateAPIView):
                 "order_id": serializer_order.data['id']
             }
         )
-        SendNotify(request.data['business'])
+        SendNotify.delay(request.data['business'])
         return response.Response(data={
             "message": "success"
         })
