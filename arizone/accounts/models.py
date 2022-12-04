@@ -77,13 +77,14 @@ class CustomUser(AbstractUser):
 
 class BusinessUser(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="business_user")
-    longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
-    latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
+    longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, default=105)
+    latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, default=10)
     address = models.CharField(max_length=255)
     status = models.CharField(max_length=255, null=True)
     rating = models.FloatField(default=0)
     amount_product = models.IntegerField(default=0)
     sold = models.IntegerField(default=0)
+    stripe_connect = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return str(self.user)
@@ -94,3 +95,11 @@ class DeliveryAddress(models.Model):
     name = models.CharField(max_length=255)
     phone = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
+
+class Pin(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
+    pin = models.IntegerField()
+    expired = models.CharField(null=True, max_length=255)
+
+    def __str__(self) -> str:
+        return str(self.user) + " " + str(self.pin)

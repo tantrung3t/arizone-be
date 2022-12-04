@@ -46,7 +46,8 @@ class BusinessSerializer(serializers.ModelSerializer):
         model = BusinessUser
         fields = [
             "user",
-            "address"
+            "address",
+            "stripe_connect"
         ]
 
 class InfoSerializer(serializers.ModelSerializer):

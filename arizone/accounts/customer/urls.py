@@ -12,4 +12,6 @@ urlpatterns = [
     path('store/<int:store_id>', views.StoreAPI.as_view()),
     path('address/', views.AddressAPI.as_view()),
     path('address/<int:address_id>/', views.DestroyAddressAPI.as_view()),
+    path('forgot-password/', views.ForgotPasswordApiView.as_view()),
+    path('forgot-password/confirm/', views.ChangePasswordWithPINApiView.as_view()),
 ]

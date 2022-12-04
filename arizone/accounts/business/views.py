@@ -16,6 +16,8 @@ User = get_user_model()
 # Using TokenBlacklistView default
 # Using TokenRefreshView default
 
+from bases.services.stripe.stripe import stripe_created_connect
+
 class BusinessRegisterAPI(APIView):
 
     def post(self, request, *args, **kwargs):
@@ -23,15 +25,17 @@ class BusinessRegisterAPI(APIView):
         user = RegisterSerializer(data=request.data)
         user.is_valid(raise_exception=True)
         user.save()
-        print(user.data['id'])
+        connect = stripe_created_connect(request.data['email'], request.data['full_name'])
         data = {
             "user": user.data['id'],
-            "address": request.data["address"]
+            "address": request.data["address"],
+            "stripe_connect": connect
         }
         serializer = BusinessSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(data=user.data, status=status.HTTP_201_CREATED)
+
 
 
 class BusinessInfoAPI(APIView):

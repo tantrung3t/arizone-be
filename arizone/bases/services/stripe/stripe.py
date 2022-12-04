@@ -154,20 +154,19 @@ def stripe_transaction(txn):  # call Transaction Stripe
     return transaction
 
 
-def stripe_created_connect(business_email, address_business, identity_verify, business_profile, bank_account):
+def stripe_created_connect(business_email, business_full_name):
     try:
         connect_account = stripe.Account.create(
             type="custom",
-            country="US",
+            country="us",
             email=business_email,
             business_type="individual",
             capabilities={
-                "card_payments": {"requested": True},
                 "transfers": {"requested": True},
             },
             external_account={
                 "object": "bank_account",
-                "account_holder_name": bank_account["account_holder_name"],
+                "account_holder_name": "Jenny Rosen",
                 "account_holder_type": "individual",
                 "country": "US",
                 "currency": "usd",
@@ -176,12 +175,12 @@ def stripe_created_connect(business_email, address_business, identity_verify, bu
             },
             individual={
                 "address": {
-                    "city": address_business["city"],
-                    "country": address_business["country"],
-                    "line1": address_business["line1"],
-                    "line2": address_business["line2"],
-                    "postal_code": address_business["postal_code"],
-                    "state": address_business["state"]
+                    "city": "El Toro",
+                    "country": "US",
+                    "line1": "4276",
+                    "line2": "Peck Court",
+                    "postal_code": "92630",
+                    "state": "California"
                 },
                 "dob": {
                     "day": 1,
@@ -189,14 +188,14 @@ def stripe_created_connect(business_email, address_business, identity_verify, bu
                     "year": 1980
                 },
                 "email": business_email,
-                "first_name": identity_verify["first_name"],
-                "last_name": identity_verify["last_name"],
+                "first_name": "Tài khoản",
+                "last_name": business_full_name,
                 "phone": "8888675309",
-                "ssn_last_4": identity_verify["ssn_last_4"]
+                "ssn_last_4": "0000"
             },
             business_profile={
-                "url": business_profile["url"],
-                "mcc": business_profile["mcc"],
+                "url": "fb.com",
+                "mcc": "5734",
             },
             tos_acceptance={
                 # "service_agreement": "recipient",
@@ -205,10 +204,11 @@ def stripe_created_connect(business_email, address_business, identity_verify, bu
             },
 
         )
+        
     except Exception as e:
         print(e)
 
-    return connect_account
+    return connect_account.id
 
 
 def stripe_retrieve_account(acct_id):

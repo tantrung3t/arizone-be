@@ -66,9 +66,11 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             "full_name",
             "permission",
+            "birthday",
             "phone",
             "address",
             "image",
+            "sex",
             "stripe_customer"
         ]
 
@@ -80,6 +82,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "email",
             "phone",
             "birthday",
+            "address",
             "sex",
             "image"
         ]
@@ -119,3 +122,16 @@ class AddressSerializer(serializers.ModelSerializer):
             "phone",
             "address",
         ]
+class PinSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Pin
+        fields = ['user', 'pin', 'expired']
+
+class ChangePasswordWithPinSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    pin = serializers.IntegerField(required=True)
+    new_password = serializers.CharField(required=True)
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)

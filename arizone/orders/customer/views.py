@@ -12,7 +12,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from bases.services.firebase import notification
 
-from accounts.models import CustomUser
+from accounts.models import CustomUser, BusinessUser
 
 from ..tasks import SendNotify
 
@@ -84,7 +84,6 @@ class CreateOrderAPI(generics.CreateAPIView):
         return response.Response(data=serializer_order.data)
 
 
-
 class CreateOrderPaymentOnlineAPI(generics.CreateAPIView):
 
     authentication_classes = [JWTAuthentication]
@@ -125,6 +124,8 @@ class CreateOrderPaymentOnlineAPI(generics.CreateAPIView):
         serializer_order.is_valid(raise_exception=True)
         serializer_order.save()
 
+        business = BusinessUser.objects.get(id=request.data['business'])
+
         payment = stripe.PaymentIntent.create(
             amount=total,
             currency="vnd",
@@ -134,8 +135,15 @@ class CreateOrderPaymentOnlineAPI(generics.CreateAPIView):
             description="Payment for order: " +
             str(serializer_order.data['id']),
             metadata={
-                "order_id": serializer_order.data['id']
-            }
+                "order_id": serializer_order.data['id'],
+                "business": request.data['business'],
+                "buyer": request.user
+            },
+            application_fee_amount=0,
+            transfer_data={
+                'destination': business.stripe_connect,
+            },
+
         )
         SendNotify.delay(request.data['business'])
         return response.Response(data={
@@ -181,6 +189,8 @@ class CreateOrderSavePaymentOnlineAPI(generics.CreateAPIView):
         serializer_order.is_valid(raise_exception=True)
         serializer_order.save()
 
+        business = BusinessUser.objects.get(id=request.data['business'])
+
         if(request.user.stripe_customer):
             payment_methods = stripe.Customer.list_payment_methods(
                 request.user.stripe_customer,
@@ -190,7 +200,11 @@ class CreateOrderSavePaymentOnlineAPI(generics.CreateAPIView):
                 total=total,
                 order_id=serializer_order.data['id'],
                 payment_method=payment_methods.data[0].id,
-                stripe_customer=request.user.stripe_customer
+                stripe_customer=request.user.stripe_customer,
+                stripe_connect=business.stripe_connect,
+                business=request.data['business'],
+                buyer=request.user
+
             )
         else:
             customer = stripe.Customer.create(
@@ -207,7 +221,10 @@ class CreateOrderSavePaymentOnlineAPI(generics.CreateAPIView):
                 total=total,
                 order_id=serializer_order.data['id'],
                 payment_method=request.data['payment'],
-                stripe_customer=customer.id
+                stripe_customer=customer.id,
+                stripe_connect=business.stripe_connect,
+                business=request.data['business'],
+                buyer=request.user
             )
             user_instance = CustomUser.objects.get(email=request.user.email)
             user_instance.stripe_customer = customer.id
@@ -219,7 +236,7 @@ class CreateOrderSavePaymentOnlineAPI(generics.CreateAPIView):
         })
 
 
-def stripe_payment_customer(total, order_id, payment_method, stripe_customer):
+def stripe_payment_customer(total, order_id, payment_method, stripe_customer, stripe_connect, business, buyer):
 
     payment = stripe.PaymentIntent.create(
         amount=total,
@@ -230,8 +247,14 @@ def stripe_payment_customer(total, order_id, payment_method, stripe_customer):
         description="Payment for order: " +
         str(order_id),
         metadata={
-            "order_id": order_id
+            "order_id": order_id,
+            "business": business,
+            "buyer": buyer
         },
-        customer=stripe_customer
+        customer=stripe_customer,
+        application_fee_amount=0,
+        transfer_data={
+            'destination': stripe_connect,
+        },
     )
     return payment

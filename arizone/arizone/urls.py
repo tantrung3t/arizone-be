@@ -18,6 +18,8 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from transactions.views import WebhookStripe, ListTransactionAPI
+
 urlpatterns = [
     path('admin-site/', admin.site.urls),
 
@@ -39,5 +41,8 @@ urlpatterns = [
     path('map/', include('maps.urls')),
 
     path('device/', include('devices.urls')),
+
+    path('transactions/', ListTransactionAPI.as_view()),
+    path('webhook/', WebhookStripe.as_view())
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
