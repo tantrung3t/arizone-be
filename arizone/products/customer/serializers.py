@@ -31,6 +31,7 @@ class StoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = BusinessUser
         fields = [
+            "id",
             "user",
             "address",
             "rating",

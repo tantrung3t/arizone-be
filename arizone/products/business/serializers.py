@@ -14,12 +14,14 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 class ListProductSerializer(serializers.ModelSerializer):
     created_by = UserSerializer()
+    category = serializers.StringRelatedField()
     class Meta:
         model = models.Product
         fields = [
             "id",
             "image",
             "name",
+            "category",
             "is_active",
             "is_block",
             "sold",

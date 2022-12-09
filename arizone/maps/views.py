@@ -12,6 +12,6 @@ from accounts.models import BusinessUser
 class GetStoreAPI(views.APIView):
 
     def post(self, request):
-        queryset = BusinessUser.objects.all()
+        queryset = BusinessUser.objects.filter(user__business_status="active")
         serializer = serializers.GetStoreSerializer(queryset, many=True)
         return response.Response(data=serializer.data)

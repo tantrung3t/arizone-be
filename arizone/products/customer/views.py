@@ -7,10 +7,12 @@ from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from accounts.models import BusinessUser
 
+
 class ListCategoryAPI(generics.ListAPIView):
     serializer_class = serializers.CategorySerializer
     queryset = models.Category.objects.all()
     pagination_class = None
+
 
 class ListProductAPI(generics.ListAPIView):
     serializer_class = serializers.ListProductSerializer
@@ -35,3 +37,19 @@ class DetailProductAPI(generics.RetrieveAPIView):
         queryset = BusinessUser.objects.get(user=self.user_id)
         serializer = serializers.StoreSerializer(queryset)
         return Response(serializer.data)
+
+
+class StoreProductAPI(generics.ListAPIView):
+    serializer_class = serializers.ListProductSerializer
+    pagination_class = LimitOffset16Pagination
+
+    lookup_url_kwarg = "store_id"
+
+    def get_queryset(self):
+        queryset = models.Product.objects.filter(
+            business = self.kwargs['store_id'],
+            is_active=True,
+            is_delete=False,
+            is_block=False,
+            created_by__business_status="active")
+        return queryset

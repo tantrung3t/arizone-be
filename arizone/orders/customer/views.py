@@ -47,8 +47,9 @@ class CreateOrderAPI(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         # serializer = serializers.CreateOrderSerializer(data=request.data)
         # serializer.is_valid(raise_exception=True)
-        cart = Cart.objects.get(id=request.data['cart_id'])
-        cart.delete()
+        if (request.data['cart_id'] != ""):
+            cart = Cart.objects.get(id=request.data['cart_id'])
+            cart.delete()
         order_detail = []
         total = 0
         for product_order in request.data['order']:
@@ -90,8 +91,9 @@ class CreateOrderPaymentOnlineAPI(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        cart = Cart.objects.get(id=request.data['cart_id'])
-        cart.delete()
+        if (request.data['cart_id'] != ""):
+            cart = Cart.objects.get(id=request.data['cart_id'])
+            cart.delete()
         order_detail = []
         total = 0
         for product_order in request.data['order']:
@@ -157,8 +159,9 @@ class CreateOrderSavePaymentOnlineAPI(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        cart = Cart.objects.get(id=request.data['cart_id'])
-        cart.delete()
+        if (request.data['cart_id'] != ""):
+            cart = Cart.objects.get(id=request.data['cart_id'])
+            cart.delete()
         order_detail = []
         total = 0
         for product_order in request.data['order']:

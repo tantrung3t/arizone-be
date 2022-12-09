@@ -20,7 +20,7 @@ class ListCreateProductAPI(generics.ListCreateAPIView):
 
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['name']
+    search_fields = ['name', 'category__name']
     filterset_fields = ['is_active', "is_block"]
     ordering_fields = ["created_at"]
 

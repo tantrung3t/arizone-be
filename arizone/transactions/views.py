@@ -17,7 +17,8 @@ class ListTransactionAPI(generics.ListAPIView):
     
     serializer_class = serializers.TransactionSerializer
 
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+    search_fields = ["stripe_payment", "buyer"]
     ordering_fields = ["timestamp"]
 
     def get_queryset(self):
